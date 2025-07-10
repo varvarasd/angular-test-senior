@@ -1,6 +1,10 @@
-# AngularTestSenior
+# Angular Test Senior
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.0.
+
+## Test instructions
+Please refer to the [test instructions readme file](https://github.com/cox-auto-inc-codeweavers/angular-test-senior/blob/main/Tech-Test-Senior-Frontend.md).
+
 
 ## Development server
 
