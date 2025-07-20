@@ -1,0 +1,47 @@
+<div *ngIf="loading">Loading...</div>
+<div *ngIf="error">{{ error }}</div>
+<div *ngIf="vehicle">
+  <h2>{{ vehicle.year }} {{ vehicle.make }} {{ vehicle.model }}</h2>
+  <ul>
+    <li>Price: £{{ vehicle.price }}</li>
+    <li>Mileage: {{ vehicle.mileage }} miles</li>
+    <li>Colour: {{ vehicle.colour }}</li>
+    <li>ID: {{ vehicle.id }}</li>
+  </ul>
+  <form (ngSubmit)="calculateFinance()">
+    <label>
+      Term (months):
+      <input
+        type="number"
+        [(ngModel)]="term"
+        name="term"
+        min="12"
+        max="72"
+        required
+      />
+    </label>
+    <label>
+      Deposit (£):
+      <input
+        type="number"
+        [(ngModel)]="deposit"
+        name="deposit"
+        min="0"
+        [max]="vehicle.price"
+        required
+      />
+    </label>
+    <button type="submit">Calculate Finance</button>
+  </form>
+  <div *ngIf="quote">
+    <h3>Finance Quote</h3>
+    <ul>
+      <li>On The Road Price: £{{ quote.onTheRoadPrice }}</li>
+      <li>Total Deposit: £{{ quote.totalDeposit }}</li>
+      <li>Total Amount Of Credit: £{{ quote.totalAmountOfCredit }}</li>
+      <li>Number Of Monthly Payments: {{ quote.numberOfMonthlyPayments }}</li>
+      <li>Monthly Payment: £{{ quote.monthlyPayment }}</li>
+    </ul>
+  </div>
+  <button (click)="backToList()">Back to List</button>
+</div>

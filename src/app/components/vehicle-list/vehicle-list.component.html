@@ -1,0 +1,24 @@
+<div>
+  <input
+    type="text"
+    [(ngModel)]="filterText"
+    (input)="onFilterChange()"
+    placeholder="Filter by make/model"
+  />
+  <div>
+    <button (click)="onSortChange('price')">Sort by Price</button>
+    <button (click)="onSortChange('year')">Sort by Year</button>
+    <button (click)="onSortChange('mileage')">Sort by Mileage</button>
+  </div>
+  <ul>
+    <li *ngFor="let vehicle of filteredVehicles">
+      <span
+        >{{ vehicle.year }} {{ vehicle.make }} {{ vehicle.model }} - £{{
+          vehicle.price
+        }}
+        - {{ vehicle.mileage }} miles</span
+      >
+      <button (click)="goToDetails(vehicle.id)">Details</button>
+    </li>
+  </ul>
+</div>
