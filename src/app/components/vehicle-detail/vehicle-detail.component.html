@@ -1,20 +1,24 @@
-<div *ngIf="loading">Loading...</div>
-<div *ngIf="error">{{ error }}</div>
-<div *ngIf="vehicle">
-  <h2>{{ vehicle.year }} {{ vehicle.make }} {{ vehicle.model }}</h2>
+@if (loading()) {
+<div>Loading...</div>
+} @if (error()) {
+<div>{{ error() }}</div>
+} @if (vehicle()) {
+<div>
+  <h2>{{ vehicle()?.year }} {{ vehicle()?.make }} {{ vehicle()?.model }}</h2>
   <ul>
-    <li>Price: £{{ vehicle.price }}</li>
-    <li>Mileage: {{ vehicle.mileage }} miles</li>
-    <li>Colour: {{ vehicle.colour }}</li>
-    <li>ID: {{ vehicle.id }}</li>
+    <li>Price: £{{ vehicle()?.price }}</li>
+    <li>Mileage: {{ vehicle()?.mileage }} miles</li>
+    <li>Colour: {{ vehicle()?.colour }}</li>
+    <li>ID: {{ vehicle()?.id }}</li>
   </ul>
   <form (ngSubmit)="calculateFinance()">
     <label>
       Term (months):
       <input
+        #termInput
         type="number"
-        [(ngModel)]="term"
-        name="term"
+        [value]="term()"
+        (input)="term.set(termInput?.valueAsNumber ?? 0)"
         min="12"
         max="72"
         required
@@ -23,25 +27,31 @@
     <label>
       Deposit (£):
       <input
+        #depositInput
         type="number"
-        [(ngModel)]="deposit"
-        name="deposit"
+        [value]="deposit()"
+        (input)="deposit.set(depositInput?.valueAsNumber ?? 0)"
         min="0"
-        [max]="vehicle.price"
+        [max]="vehicle()?.price ?? 0"
         required
       />
     </label>
     <button type="submit">Calculate Finance</button>
   </form>
-  <div *ngIf="quote">
+  @if (quote()){
+  <div>
     <h3>Finance Quote</h3>
     <ul>
-      <li>On The Road Price: £{{ quote.onTheRoadPrice }}</li>
-      <li>Total Deposit: £{{ quote.totalDeposit }}</li>
-      <li>Total Amount Of Credit: £{{ quote.totalAmountOfCredit }}</li>
-      <li>Number Of Monthly Payments: {{ quote.numberOfMonthlyPayments }}</li>
-      <li>Monthly Payment: £{{ quote.monthlyPayment }}</li>
+      <li>On The Road Price: £{{ quote()?.onTheRoadPrice }}</li>
+      <li>Total Deposit: £{{ quote()?.totalDeposit }}</li>
+      <li>Total Amount Of Credit: £{{ quote()?.totalAmountOfCredit }}</li>
+      <li>
+        Number Of Monthly Payments: {{ quote()?.numberOfMonthlyPayments }}
+      </li>
+      <li>Monthly Payment: £{{ quote()?.monthlyPayment }}</li>
     </ul>
   </div>
+  }
   <button (click)="backToList()">Back to List</button>
 </div>
+}

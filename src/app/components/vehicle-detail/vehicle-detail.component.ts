@@ -1,4 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  signal,
+  inject,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { VehicleService } from '../../services/vehicle.service';
 import { FinanceCalculatorService } from '../../services/finance.calculator.service';
@@ -13,51 +18,52 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule, FormsModule],
   templateUrl: './vehicle-detail.component.html',
   styleUrls: ['./vehicle-detail.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'vehicle-detail' },
 })
-export class VehicleDetailComponent implements OnInit {
-  vehicle: Vehicle | null = null;
-  loading = true;
-  error = '';
-  term = 60;
-  deposit = 0;
-  quote: FinanceQuote | null = null;
+export class VehicleDetailComponent {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private vehicleService = inject(VehicleService);
+  private financeService = inject(FinanceCalculatorService);
 
-  constructor(
-    private route: ActivatedRoute,
-    private vehicleService: VehicleService,
-    private financeService: FinanceCalculatorService,
-    private router: Router
-  ) {}
+  readonly loading = signal(true);
+  readonly error = signal('');
+  readonly vehicle = signal<Vehicle | null>(null);
+  readonly term = signal(60);
+  readonly deposit = signal(0);
+  readonly quote = signal<FinanceQuote | null>(null);
 
-  ngOnInit() {
+  constructor() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.vehicleService.getVehicleById(id).subscribe({
-        next: (v) => {
-          this.vehicle = v;
-          this.loading = false;
-          if (!v) this.error = 'Vehicle not found.';
+        next: (v: Vehicle | null) => {
+          this.vehicle.set(v);
+          this.loading.set(false);
+          if (!v) this.error.set('Vehicle not found.');
           else {
-            this.deposit = Math.round(v.price * 0.1); // Default 10% deposit
+            this.deposit.set(Math.round(v.price * 0.1));
             this.calculateFinance();
           }
         },
         error: () => {
-          this.error = 'Error fetching vehicle.';
-          this.loading = false;
+          this.error.set('Error fetching vehicle.');
+          this.loading.set(false);
         },
       });
     } else {
-      this.error = 'No vehicle ID provided.';
-      this.loading = false;
+      this.error.set('No vehicle ID provided.');
+      this.loading.set(false);
     }
   }
 
   calculateFinance() {
-    if (this.vehicle) {
+    const v = this.vehicle();
+    if (v) {
       this.financeService
-        .calculateQuote(this.vehicle, this.term, this.deposit)
-        .subscribe((q) => (this.quote = q));
+        .calculateQuote(v, this.term(), this.deposit())
+        .subscribe((q: FinanceQuote) => this.quote.set(q));
     }
   }
 

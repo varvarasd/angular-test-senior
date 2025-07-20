@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, delay } from 'rxjs';
 import { Vehicle } from '../models/vehicle.model';
@@ -7,8 +7,7 @@ import { catchError, map } from 'rxjs/operators';
 @Injectable({ providedIn: 'root' })
 export class VehicleService {
   private readonly vehiclesUrl = '/data/vehicles.json';
-
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   getVehicles(): Observable<Vehicle[]> {
     return this.http.get<Vehicle[]>(this.vehiclesUrl).pipe(
